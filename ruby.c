@@ -962,6 +962,24 @@ proc_options(long argc, char **argv, ruby_cmdline_options_t *opt, int envopt)
 	s = arg + 1;
       reswitch:
 	switch (*s) {
+	  case 'ä':
+	    if (envopt) goto noenvopt;
+	    opt->do_split = TRUE;
+	    forbid_setid("-e");
+	    if (!*++s) {
+		if (!--argc)
+		    rb_raise(rb_eRuntimeError, "no code specified for -e");
+		s = *++argv;
+	    }
+	    if (!opt->e_script) {
+		opt->e_script = rb_str_new(0, 0);
+		if (opt->script == 0)
+		    opt->script = "-e";
+	    }
+	    rb_str_cat2(opt->e_script, s);
+	    rb_str_cat2(opt->e_script, "\n");
+	    break;
+
 	  case 'a':
 	    if (envopt) goto noenvopt;
 	    opt->do_split = TRUE;
